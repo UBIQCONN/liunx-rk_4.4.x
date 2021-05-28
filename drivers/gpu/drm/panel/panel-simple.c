@@ -1993,6 +1993,29 @@ static const struct panel_desc samsung_lsn122dl01_c01 = {
 	},
 };
 
+static const struct drm_display_mode boe_pv156fhm_n20_mode = {
+       .clock = 141120,
+       .hdisplay = 1920,
+       .hsync_start = 1920 + 48,
+       .hsync_end = 1920 + 48 + 32,
+       .htotal = 1920 + 48 + 32 + 100,
+       .vdisplay = 1080,
+       .vsync_start = 1080 + 3,
+       .vsync_end = 1080 + 3 + 6,
+       .vtotal = 1080 + 3 + 6 + 31,
+       .vrefresh = 60,
+};
+
+static const struct panel_desc boe_pv156fhm_n20 = {
+       .modes = &boe_pv156fhm_n20_mode,
+       .num_modes = 1,
+       .size = {
+               .width = 1920,
+               .height = 1080,
+       },
+       .bus_format = MEDIA_BUS_FMT_RGB666_1X18,
+};
+
 static const struct drm_display_mode samsung_ltn101nt05_mode = {
 	.clock = 54030,
 	.hdisplay = 1024,
@@ -2199,9 +2222,13 @@ static const struct of_device_id platform_of_match[] = {
 		.compatible = "shelly,sca07010-bfn-lnn",
 		.data = &shelly_sca07010_bfn_lnn,
 	}, {
+		.compatible = "boe,pv156fhm-n20",
+		.data = &boe_pv156fhm_n20,
+	}, {
 		/* sentinel */
 	}
 };
+
 MODULE_DEVICE_TABLE(of, platform_of_match);
 
 static int panel_simple_platform_probe(struct platform_device *pdev)

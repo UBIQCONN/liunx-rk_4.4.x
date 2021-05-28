@@ -79,8 +79,9 @@
 
 static const char * const gc8034_supply_names[] = {
 	"avdd",		/* Analog power */
-	"dovdd",	/* Digital I/O power */
-	"dvdd",		/* Digital core power */
+	"afvdd",	
+	"iovdd",
+	"corevdd",
 };
 
 #define GC8034_NUM_SUPPLIES ARRAY_SIZE(gc8034_supply_names)
@@ -1480,6 +1481,7 @@ static int gc8034_s_stream(struct v4l2_subdev *sd, int on)
 	struct i2c_client *client = gc8034->client;
 	int ret = 0;
 
+	v4l2_info(sd, "%s %d-STD\n", __func__, on);
 	mutex_lock(&gc8034->mutex);
 	on = !!on;
 	if (on == gc8034->streaming)

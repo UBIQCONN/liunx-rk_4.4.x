@@ -99,7 +99,7 @@
 			240 241 242 243 244 245 246 247
 			248 249 250 251 252 253 254 255>;
 		default-brightness-level = <200>;
-		enable = <&gpio0 RK_PC1 GPIO_ACTIVE_HIGH>;
+		enable-gpios = <&gpio0 RK_PC1 GPIO_ACTIVE_HIGH>;
 	};
 
 	charge-animation {
@@ -289,7 +289,7 @@
 
                 width-mm = <121>;
                 height-mm = <68>;
-		enable-gpios = <&gpio3 RK_PA1 GPIO_ACTIVE_HIGH>;
+		enable-gpios= <&gpio3 RK_PA1 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&lcd_panel_reset>;
 
@@ -807,6 +807,9 @@
 		clocks = <&osc 0>;
 		clock-names = "refclk";
 
+		pinctrl-names = "default";
+		pinctrl-0 = <&edp_enable_drv>;
+
 	        ports {
         	        #address-cells = <1>;
 	                #size-cells = <0>;
@@ -1028,19 +1031,23 @@
 	
 	lcd-panel {
 		lcd_panel_reset: lcd-panel-reset {
-			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 
 		edp_vcc1v2_drv: edp-vcc1v2-drv {
-			rockchip,pins = <3 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <3 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 
 		edp_vcc1v8_drv: edp-vcc1v8-drv {
-			rockchip,pins = <0 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <0 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 
 		bl_en_drv: bl-en-drv {
-			rockchip,pins = <0 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <0 RK_PC1 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+
+		edp_enable_drv: edp-enable-drv {
+			rockchip,pins = <3 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
 

@@ -286,6 +286,7 @@ static inline struct tc_data *connector_to_tc(struct drm_connector *c)
 
 static int tc358770_write(struct regmap *map, unsigned int reg, unsigned int val)
 {
+	
 	return regmap_write(map, reg, val);
 }	
 
@@ -1342,6 +1343,11 @@ static void tc_bridge_pre_enable(struct drm_bridge *bridge)
 	struct tc_data *tc = bridge_to_tc(bridge);
 
 	dev_dbg(tc->dev,  "%s start\n", __func__);
+
+        if (tc->enable_gpio){
+		gpiod_direction_output(tc->enable_gpio, 1);
+	}	
+	
 	tc_set_dsi_configuration(tc);
 	drm_panel_prepare(tc->panel);
 }
@@ -1441,7 +1447,6 @@ static int tc_bridge_probe(struct i2c_client *client,
 	struct tc_data *tc;
 	int ret;
 
-	printk(KERN_INFO"%s start\n", __func__);
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		DRM_ERROR("device doesn't support I2C\n");
 		return -ENODEV;
@@ -1467,8 +1472,8 @@ static int tc_bridge_probe(struct i2c_client *client,
 
 	dev_set_drvdata(&client->dev, tc);
 
-	tc->enable_gpio = devm_gpiod_get(dev, "enable",
-					    GPIOD_OUT_LOW);
+	tc->enable_gpio = devm_gpiod_get_optional(tc->dev, "enable",
+                                                  GPIOD_ASIS);
 	if (IS_ERR(tc->enable_gpio)) {
 		DRM_ERROR("failed to get enable gpio from DT\n");
 		ret = PTR_ERR(tc->enable_gpio);

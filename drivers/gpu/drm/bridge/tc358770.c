@@ -684,8 +684,8 @@ static int tc_dp_phy_plls(struct tc_data *tc)
 	if (ret)
 		return ret;
 
-/*	tc358770_write(tc->regmap, PXL_PLLPARAM, 0x0022823a); */
-	tc358770_write(tc->regmap, PXL_PLLPARAM, 0x00228236);
+	tc358770_write(tc->regmap, PXL_PLLPARAM, 0x0022823a); 
+/*	tc358770_write(tc->regmap, PXL_PLLPARAM, 0x00228236);  */
 
 	/* Force PLL parameter update and disable bypass */
 	return tc_pllupdate(tc, PXL_PLLCTRL);
@@ -948,7 +948,7 @@ static int tc_set_video_mode(struct tc_data *tc,
 	 * sync signals
 	 */
 	ret = tc358770_write(tc->regmap, VPCTRL0,
-			   FIELD_PREP(VSDELAY, 0x108) |
+			   FIELD_PREP(VSDELAY, 0x200) |
 			   OPXLFMT_RGB666 | FRMSYNC_DISABLED | MSF_DISABLED);
 	if (ret)
 		return ret;

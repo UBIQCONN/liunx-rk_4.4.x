@@ -64,7 +64,7 @@
 		compatible = "pwm-backlight";
 		pinctrl-names = "default";
 		pinctrl-0 = <&bl_en_drv>;
-		pwms = <&pwm1 0 26000 0>;
+		pwms = <&pwm1 0 1000000 0>;
 		brightness-levels = <
 			  0   1   2   3   4   5   6   7
 			  8   9  10  11  12  13  14  15
@@ -153,7 +153,7 @@
 		 * - SDIO_RESET_L_WL_REG_ON
 		 * - PDN (power down when low)
 		 */
-		reset-gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_LOW>; /* GPIO3_A4 */
+		reset-gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>; /* GPIO3_A4 */
 	};
 
 	vcc_phy: vcc-phy-regulator {
@@ -263,7 +263,7 @@
 
 	wireless-wlan {
 		compatible = "wlan-platdata";
-		wifi_chip_type = "ap6938s";   /*???*/
+		wifi_chip_type = "ap6398s";   /*???*/
 		WIFI,host_wake_irq = <&gpio0 RK_PB2 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 	};
@@ -297,8 +297,8 @@
                         native-mode = <&timing0>;
  
                         timing0: timing0 {
-				/* clock-frequency = <139200000>;  */
-                                clock-frequency = <131000000>; 
+				 clock-frequency = <139200000>;  
+                          /*      clock-frequency = <131000000>; */
                                 hactive = <1920>;
                                 vactive = <1080>;
                                 hfront-porch = <48>;
@@ -749,7 +749,7 @@
 		interrupts = <15 IRQ_TYPE_LEVEL_LOW>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&rtc_int_drv>;
-		status = "disabled";
+		status = "okay";
        };
 };
 
@@ -937,7 +937,7 @@
 	supports-sd;
 	card-detect-delay = <800>;
 	ignore-pm-notify;
-	cd-gpios = <&gpio0 RK_PA3 GPIO_ACTIVE_HIGH>;
+	cd-gpios = <&gpio0 RK_PA3 GPIO_ACTIVE_HIGH>; 
 	sd-uhs-sdr12;
 	sd-uhs-sdr25;
 	sd-uhs-sdr50;

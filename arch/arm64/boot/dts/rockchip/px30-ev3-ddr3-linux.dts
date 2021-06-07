@@ -64,7 +64,7 @@
 		compatible = "pwm-backlight";
 		pinctrl-names = "default";
 		pinctrl-0 = <&bl_en_drv>;
-		pwms = <&pwm1 0 1000000 0>;
+		pwms = <&pwm1 0 100000 0>;
 		brightness-levels = <
 			  0   1   2   3   4   5   6   7
 			  8   9  10  11  12  13  14  15
@@ -263,8 +263,8 @@
 
 	wireless-wlan {
 		compatible = "wlan-platdata";
-		wifi_chip_type = "ap6398s";   /*???*/
-		WIFI,host_wake_irq = <&gpio0 RK_PB2 GPIO_ACTIVE_HIGH>;
+		wifi_chip_type = "ap6398sv";   
+		WIFI,host_wake_irq = <&gpio0 RK_PB2 GPIO_ACTIVE_LOW>;
 		status = "okay";
 	};
 
@@ -276,8 +276,8 @@
 		pinctrl-names = "default","rts_gpio";
 		pinctrl-0 = <&uart1_rts>;
 		pinctrl-1 = <&uart1_rts_gpio>;
-		BT,reset_gpio = <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;
-		BT,wake_gpio = <&gpio2 RK_PB0 GPIO_ACTIVE_HIGH>;
+		BT,reset_gpio = <&gpio0 RK_PA1 GPIO_ACTIVE_LOW>;
+		BT,wake_gpio = <&gpio2 RK_PB0 GPIO_ACTIVE_LOW>;
 		BT,wake_host_irq = <&gpio0 RK_PB3 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 	};
@@ -289,6 +289,7 @@
 
                 width-mm = <121>;
                 height-mm = <68>;
+/*		enable-gpios= <&gpio0 RK_PB7 GPIO_ACTIVE_HIGH>;  */
 		enable-gpios= <&gpio3 RK_PA1 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&lcd_panel_reset>;
@@ -297,7 +298,8 @@
                         native-mode = <&timing0>;
  
                         timing0: timing0 {
-				 clock-frequency = <139200000>;  
+			  /*	 clock-frequency = <139200000>;  */
+				 clock-frequency = <129600000>;  
                           /*      clock-frequency = <131000000>; */
                                 hactive = <1920>;
                                 vactive = <1080>;
@@ -844,7 +846,7 @@
 &io_domains {
 	status = "okay";
 
-	vccio1-supply = <&vcc_3v0>;
+	vccio1-supply = <&vcc1v8_soc>;
 	vccio2-supply = <&vccio_sd>;
 	vccio3-supply = <&vcc_3v0>;
 	vccio4-supply = <&vcc3v0_pmu>;
@@ -948,14 +950,14 @@
 };
 
 &sdio {
-	bus-width = <4>;
+	bus-width = <4>; 
 	cap-sd-highspeed;
 	supports-sdio;
 	ignore-pm-notify;
 	keep-power-in-suspend;
 	non-removable;
 	mmc-pwrseq = <&sdio_pwrseq>;
-	sd-uhs-sdr104;
+	sd-uhs-sdr104; 
 	status = "okay";
 };
 
@@ -1024,14 +1026,30 @@
 			&pdm_sdi0m0
 			&pdm_sdi1>;
 
+	#sound-dai-cells = <0>;
 	status = "okay";
 };
 
 &pinctrl {
 	
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_hog>;
+
+	gerneral_setting {
+		pinctrl_hog: hoggrp {
+			rockchip,pins = 
+				<3 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>,	//W_DISABLE
+				<3 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>,	//WWAN_WAKE
+				<3 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>,	//WWAN_PWR_ON
+				<3 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>,	//WWAN_RST
+				<3 RK_PC0 RK_FUNC_GPIO &pcfg_pull_none>;	//SIM_ON
+		};
+	};
+
 	lcd-panel {
 		lcd_panel_reset: lcd-panel-reset {
-			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>;
+/*			rockchip,pins = <0 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>;  */
+			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>; 
 		};
 
 		edp_vcc1v2_drv: edp-vcc1v2-drv {

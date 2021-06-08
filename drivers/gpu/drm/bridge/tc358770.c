@@ -216,7 +216,7 @@
 #define PLLBYP				BIT(1)
 #define PLLEN				BIT(0)
 #define PXL_PLLPARAM		0x0914
-#define IN_SEL_REFCLK			(0 << 14)
+#define IN_SEL_REFCLK			(2 << 14)
 #define SYS_PLLPARAM		0x0918
 #define REF_FREQ_38M4			(0 << 8) /* 38.4 MHz */
 #define REF_FREQ_19M2			(1 << 8) /* 19.2 MHz */
@@ -489,7 +489,8 @@ static int tc_pxl_pll_en(struct tc_data *tc, u32 refclk, u32 pixelclock)
 	int div, best_div = 1;
 	int mul, best_mul = 1;
 	int delta, best_delta;
-	int ext_div[] = {1, 2, 3, 5, 7};
+	int post_div[] = {1, 2, 3, 5, 7};
+	int pre_div[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 	int best_pixelclock = 0;
 	int vco_hi = 0;
 	u32 pxl_pllparam;
@@ -498,20 +499,20 @@ static int tc_pxl_pll_en(struct tc_data *tc, u32 refclk, u32 pixelclock)
 		refclk);
 	best_delta = pixelclock;
 	/* Loop over all possible ext_divs, skipping invalid configurations */
-	for (i_pre = 0; i_pre < ARRAY_SIZE(ext_div); i_pre++) {
+	for (i_pre = 0; i_pre < ARRAY_SIZE(pre_div); i_pre++) {
 		/*
 		 * refclk / ext_pre_div should be in the 1 to 200 MHz range.
 		 * We don't allow any refclk > 200 MHz, only check lower bounds.
 		 */
-		if (refclk / ext_div[i_pre] < 1000000)
+		if (refclk / pre_div[i_pre] < 1000000)
 			continue;
-		for (i_post = 0; i_post < ARRAY_SIZE(ext_div); i_post++) {
+		for (i_post = 0; i_post < ARRAY_SIZE(post_div); i_post++) {
 			for (div = 1; div <= 16; div++) {
 				u32 clk;
 				u64 tmp;
 
-				tmp = pixelclock * ext_div[i_pre] *
-				      ext_div[i_post] * div;
+				tmp = pixelclock * pre_div[i_pre] *
+				      post_div[i_post] * div;
 				do_div(tmp, refclk);
 				mul = tmp;
 
@@ -519,7 +520,7 @@ static int tc_pxl_pll_en(struct tc_data *tc, u32 refclk, u32 pixelclock)
 				if ((mul < 1) || (mul > 128))
 					continue;
 
-				clk = (refclk / ext_div[i_pre] / div) * mul;
+				clk = (refclk / pre_div[i_pre] / div) * mul;
 				/*
 				 * refclk * mul / (ext_pre_div * pre_div)
 				 * should be in the 150 to 650 MHz range
@@ -527,7 +528,7 @@ static int tc_pxl_pll_en(struct tc_data *tc, u32 refclk, u32 pixelclock)
 				if ((clk > 650000000) || (clk < 150000000))
 					continue;
 
-				clk = clk / ext_div[i_post];
+				clk = clk / post_div[i_post];
 				delta = clk - pixelclock;
 
 				if (abs(delta) < abs(best_delta)) {
@@ -550,10 +551,10 @@ static int tc_pxl_pll_en(struct tc_data *tc, u32 refclk, u32 pixelclock)
 	dev_dbg(tc->dev, "PLL: got %d, delta %d\n", best_pixelclock,
 		best_delta);
 	dev_dbg(tc->dev, "PLL: %d / %d / %d * %d / %d\n", refclk,
-		ext_div[best_pre], best_div, best_mul, ext_div[best_post]);
+		pre_div[best_pre], best_div, best_mul, post_div[best_post]);
 
 	/* if VCO >= 300 MHz */
-	if (refclk / ext_div[best_pre] / best_div * best_mul >= 300000000)
+	if (refclk / pre_div[best_pre] / best_div * best_mul >= 300000000)
 		vco_hi = 1;
 	/* see DS */
 	if (best_div == 16)
@@ -567,12 +568,13 @@ static int tc_pxl_pll_en(struct tc_data *tc, u32 refclk, u32 pixelclock)
 		return ret;
 
 	pxl_pllparam  = vco_hi << 24; /* For PLL VCO >= 300 MHz = 1 */
-	pxl_pllparam |= ext_div[best_pre] << 20; /* External Pre-divider */
-	pxl_pllparam |= ext_div[best_post] << 16; /* External Post-divider */
+	pxl_pllparam |= pre_div[best_pre] << 20; /* External Pre-divider */
+	pxl_pllparam |= post_div[best_post] << 16; /* External Post-divider */
 	pxl_pllparam |= IN_SEL_REFCLK; /* Use RefClk as PLL input */
 	pxl_pllparam |= best_div << 8; /* Divider for PLL RefClk */
 	pxl_pllparam |= best_mul; /* Multiplier for PLL */
 
+	dev_info(tc->dev, "PLL: %d clk  %x\n", refclk, pxl_pllparam);
 	ret = tc358770_write(tc->regmap, PXL_PLLPARAM, pxl_pllparam);
 	if (ret)
 		return ret;
@@ -676,19 +678,25 @@ static int tc_setup_main_link(struct tc_data *tc)
 static int tc_dp_phy_plls(struct tc_data *tc)
 {
 	int ret;
+
 	dev_dbg(tc->dev,  "%s\n", __func__);
 	tc358770_write(tc->regmap, DP_PHY_CTRL, 0x0000000F);
-
 	/* PLL setup */
 	ret = tc_pllupdate(tc, DP0_PLLCTRL);
 	if (ret)
 		return ret;
-
-	tc358770_write(tc->regmap, PXL_PLLPARAM, 0x0022823a); 
-/*	tc358770_write(tc->regmap, PXL_PLLPARAM, 0x00228236);  */
+#if 0
+/*	tc358770_write(tc->regmap, PXL_PLLPARAM, 0x0022823a);  */
+	tc358770_write(tc->regmap, PXL_PLLPARAM, 0x00228236);  
 
 	/* Force PLL parameter update and disable bypass */
 	return tc_pllupdate(tc, PXL_PLLCTRL);
+#endif 		
+
+	ret = tc_pxl_pll_en(tc, clk_get_rate(tc->refclk),
+			    1000 * tc->mode.clock);
+	return ret;
+
 }	
 
 static int tc_reset_enable_main_link(struct tc_data *tc)

@@ -1487,6 +1487,10 @@ static int tc_bridge_probe(struct i2c_client *client,
 		ret = PTR_ERR(tc->enable_gpio);
 	}
 
+        if (tc->enable_gpio){
+		gpiod_direction_output(tc->enable_gpio, 1);
+	}
+
 	tc->refclk = devm_clk_get(tc->dev, "refclk");
 	if (IS_ERR(tc->refclk)) {
 		ret = PTR_ERR(tc->refclk);
@@ -1501,6 +1505,9 @@ static int tc_bridge_probe(struct i2c_client *client,
                 dev_err(tc->dev, "can not read device ID: %d\n", ret);
                 return ret;
         }
+
+
+        dev_info(tc->dev, "Device ID: 0x%08x\n", tc->rev);
 
         if ((tc->rev != 0x7001) && (tc->rev != 0x7003)) {
                 dev_err(tc->dev, "invalid device ID: 0x%08x\n", tc->rev);

@@ -377,6 +377,18 @@
                         linux,code = <KEY_POWER>;
                 };
         };
+
+	sim_detect {
+                compatible = "gpio-trig";
+                pinctrl-names = "default";
+                pinctrl-0 = <&wwan_drv>;
+		irqpin-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_HIGH>;
+		power-gpios = <&gpio3 RK_PA3 GPIO_ACTIVE_LOW>,
+				<&gpio3 RK_PA5 GPIO_ACTIVE_HIGH>, 
+				<&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
+		on_timing = <100 100 100>;
+		off_timing = <100 100 100>;
+	};
 };
 
 &display_subsystem {
@@ -1009,7 +1021,7 @@
 };
 
 &pinctrl {
-	
+/*	
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hog>;
 
@@ -1023,7 +1035,7 @@
 				<3 RK_PC0 RK_FUNC_GPIO &pcfg_pull_none>;	//SIM_ON
 		};
 	};
-
+*/
 	lcd-panel {
 		lcd_panel_reset: lcd-panel-reset {
 			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>; 
@@ -1052,6 +1064,17 @@
 				<0 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>,
 				<0 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>,
 				<0 RK_PB3 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	wwan_setting {
+		wwan_drv: wwan-drv{
+			rockchip,pins = 
+				<3 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>,
+				<3 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>,
+				<3 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>,
+				<3 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>,
+				<3 RK_PC0 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 

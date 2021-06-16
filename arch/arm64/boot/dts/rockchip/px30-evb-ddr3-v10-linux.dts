@@ -107,6 +107,7 @@
 		simple-audio-card,format = "i2s";
 		simple-audio-card,name = "rockchip,rk809-codec";
 		simple-audio-card,mclk-fs = <256>;
+
 		simple-audio-card,widgets =
 			"Microphone", "Mic Jack",
 			"Headphone", "Headphone Jack";
@@ -115,11 +116,23 @@
 			"IN1P", "Mic Jack",
 			"Headphone Jack", "HPOL",
 			"Headphone Jack", "HPOR";
-		simple-audio-card,cpu {
-			sound-dai = <&i2s1_2ch>;
+		simple-audio-card,dai-link@0 {
+			format = "i2s";
+			cpu {
+				sound-dai = <&i2s1_2ch>;
+			};
+			codec {
+				sound-dai = <&rk809_codec 0>;
+			};
 		};
-		simple-audio-card,codec {
-			sound-dai = <&rk809_codec>;
+		simple-audio-card,dai-link@1 {
+			format = "pdm";
+			cpu {
+				sound-dai = <&pdm>;
+			};
+			codec {
+				sound-dai = <&rk809_codec 1>;
+			};
 		};
 	};
 
@@ -590,14 +603,15 @@
 		};
 
 		rk809_codec: codec {
-			#sound-dai-cells = <0>;
+			#sound-dai-cells = <1>;
 			compatible = "rockchip,rk809-codec", "rockchip,rk817-codec";
 			clocks = <&cru SCLK_I2S1_OUT>;
 			clock-names = "mclk";
 			pinctrl-names = "default";
 			pinctrl-0 = <&i2s1_2ch_mclk>;
-			hp-volume = <20>;
+			hp-volume = <3>;
 			spk-volume = <3>;
+			capture-volume = <3>;
 			status = "okay";
 		};
 	};
@@ -679,6 +693,15 @@
 	#sound-dai-cells = <0>;
 };
 
+&pdm {
+	status = "okay";
+	#sound-dai-cells = <0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pdm_clk0m0
+		     &pdm_sdi0m0
+		     &pdm_clk1
+		     &pdm_sdi1>;
+};
 &io_domains {
 	status = "okay";
 

@@ -115,7 +115,7 @@ static struct snd_soc_ops asoc_simple_card_ops = {
 static struct snd_soc_jack simple_card_hp_jack;
 static struct snd_soc_jack_pin simple_card_hp_jack_pins[] = {
 	{
-		.pin = "Headphones",
+		.pin = "Headphone Jack",
 		.mask = SND_JACK_HEADPHONE,
 	},
 };
@@ -194,7 +194,7 @@ static int asoc_simple_card_dai_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 
 	if (gpio_is_valid(priv->gpio_hp_det)) {
-		snd_soc_card_jack_new(rtd->card, "Headphones",
+		snd_soc_card_jack_new(rtd->card, "Headphone",
 				      SND_JACK_HEADPHONE,
 				      &simple_card_hp_jack,
 				      simple_card_hp_jack_pins,

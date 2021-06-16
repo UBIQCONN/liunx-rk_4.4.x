@@ -564,6 +564,11 @@ config GPIO_DET
 	help
 	  Enable this driver will support gpio detection.
 
+config GPIO_TRIG
+	bool "gpio trigger driver"
+	help
+	  Enable this driver will support gpio trigger.
+
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"

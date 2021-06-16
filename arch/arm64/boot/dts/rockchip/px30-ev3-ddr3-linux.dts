@@ -131,15 +131,15 @@
 			sound-dai = <&rk809_codec>;
 		};
 	};
-
+/*
 	rk_headset {
 		compatible = "rockchip_headset";
-		headset_gpio = <&gpio3 RK_PA7 GPIO_ACTIVE_LOW>;	/* ?? */
+		headset_gpio = <&gpio3 RK_PA7 GPIO_ACTIVE_LOW>;	
 		pinctrl-names = "default";
 		pinctrl-0 = <&hp_det>;
 		io-channels = <&saradc 1>;
 	};
-
+*/
 	sdio_pwrseq: sdio-pwrseq {
 		compatible = "mmc-pwrseq-simple";
 		/*clocks = <&rk809 1>;*/
@@ -272,6 +272,30 @@
 		regulator-boot-on;
 	};
 
+	cmedia_power: cmedia-regulator {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		gpio = <&gpio3 RK_PC3 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&cmedia_drv>;
+		regulator-name = "cmedia_power";
+		regulator-always-on;
+		regulator-boot-on;
+		startup-delay-us = <200000>;
+	};
+
+	cmedia_reset: cmedia-rst-regulator {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		gpio = <&gpio3 RK_PC4 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&cmedia_rst_drv>;
+		regulator-name = "cmedia_reset";
+		regulator-always-on;
+		regulator-boot-on;
+		startup-delay-us = <200000>;
+	};
+
 	wireless-wlan {
 		compatible = "wlan-platdata";
 		wifi_chip_type = "ap6398sv";   
@@ -388,6 +412,18 @@
 				<&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
 		on_timing = <100 100 100>;
 		off_timing = <100 100 100>;
+	};
+
+	headphone_detect {
+                compatible = "gpio-trig";
+                pinctrl-names = "default";
+                pinctrl-0 = <&hp_det>;
+		irqpin-gpios = <&gpio3 RK_PA7 GPIO_ACTIVE_HIGH>;
+		invert-interrupt;
+		power-gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>,
+				<&gpio3 RK_PB1 GPIO_ACTIVE_HIGH>; 
+		on_timing = <100 100>;
+		off_timing = <100 100>;
 	};
 };
 
@@ -725,10 +761,10 @@
 			clock-names = "mclk";
 			pinctrl-names = "default";
 			pinctrl-0 = <&i2s1_2ch_mclk>;
-			hp-volume = <20>;
+			hp-volume = <25>;
 			spk-volume = <3>;
 			use-ext-amplifier;
-			spk-ctl-gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_HIGH>;
+		/*	spk-ctl-gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_HIGH>;  */
 			status = "okay";
 		};
 	};
@@ -1096,9 +1132,19 @@
 		};
 	};
 
-	headphone {
+	audio {
 		hp_det: hp-det {
-			rockchip,pins = <3 RK_PA7 RK_FUNC_GPIO &pcfg_pull_down>;
+			rockchip,pins = <3 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>,
+					<3 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>,
+					<3 RK_PA7 RK_FUNC_GPIO &pcfg_pull_down>;
+		};
+
+		cmedia_drv: cmedia-drv {
+			rockchip,pins = <3 RK_PC3 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		cmedia_rst_drv: cmedia-rst-drv {
+			rockchip,pins = <3 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
@@ -1152,6 +1198,7 @@
 			rockchip,pins = <3 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
+
 };
 
 /* DON'T PUT ANYTHING BELOW HERE.  PUT IT ABOVE PINCTRL */

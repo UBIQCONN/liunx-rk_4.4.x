@@ -38,6 +38,7 @@ struct gpio_trig {
 	struct gpio_desc	*intgpio;
 	struct delayed_work	work;
 	int irq;
+	bool invert;
 	struct mutex lock;
 };
 
@@ -51,13 +52,13 @@ static void gpios_array_work(struct work_struct *work)
 	
 	mutex_lock(&gt_cur->lock);
 	for (i=0; i<ga->ndescs; i++){
-		gpiod_set_value_cansleep(ga->desc[i], on);
-		if (i != (ga->ndescs-1))
-		{	
-			if (on)
-				mdelay(gt_cur->on_array[i]);
-			else	
-				mdelay(gt_cur->off_array[i]);
+		if (on){
+			mdelay(gt_cur->on_array[i]);
+			gpiod_set_value_cansleep(ga->desc[i], 1);
+		}	
+		else{	
+			mdelay(gt_cur->off_array[i]);
+			gpiod_set_value_cansleep(ga->desc[ga->ndescs - i - 1], 0);
 		}	
 	}
 	mutex_unlock(&gt_cur->lock);
@@ -66,9 +67,11 @@ static void gpios_array_work(struct work_struct *work)
 static irqreturn_t dummy_interrupt(int irq, void *data)
 {
 	struct gpio_trig *gt_cur = data;
-	int value;
+	bool value;
 
-	value = gpiod_get_value(gt_cur->intgpio);
+	value = gpiod_get_value(gt_cur->intgpio)? true : false; 
+	if (gt_cur->invert)
+		value = !value;
 	if (value !=  gt_cur->current_status){
 		gt_cur->current_status = value;
 		schedule_delayed_work(&gt_cur->work, msecs_to_jiffies(10));
@@ -82,6 +85,7 @@ static int gpio_trig_probe(struct platform_device *pdev)
 	int ret = 0;
 	struct device_node *np = pdev->dev.of_node;
 	int i;
+	bool value;
 
 	gt_cur = devm_kzalloc(&pdev->dev, sizeof(*gt_cur), GFP_KERNEL);
 	if (!gt_cur)
@@ -110,7 +114,9 @@ static int gpio_trig_probe(struct platform_device *pdev)
 		ret = PTR_ERR(gt_cur->gpios_array);
 		goto err_end;
 	}
-	 
+	
+	gt_cur->invert = of_property_read_bool(np, "invert-interrupt");
+
 	mutex_init(&gt_cur->lock);
 
 	gt_cur->intgpio = devm_gpiod_get_optional(gt_cur->dev, "irqpin", GPIOD_IN);
@@ -126,9 +132,12 @@ static int gpio_trig_probe(struct platform_device *pdev)
 		goto err_end;
 	}
 
-	gt_cur->current_status = gpiod_get_value(gt_cur->intgpio);
-	if (gt_cur->current_status)
-		schedule_delayed_work(&gt_cur->work, msecs_to_jiffies(10));
+	value = gpiod_get_value(gt_cur->intgpio)? true : false; 
+	if (gt_cur->invert)
+		value = !value;
+	gt_cur->current_status = value;
+
+	schedule_delayed_work(&gt_cur->work, msecs_to_jiffies(10));
 	dev_info(gt_cur->dev, "gpio_trig_probe success\n");
 
 err_end:

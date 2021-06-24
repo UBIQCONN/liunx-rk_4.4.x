@@ -606,7 +606,7 @@ static int tc_stream_clock_calc(struct tc_data *tc)
 	 * M/N = f_STRMCLK / f_LSCLK
 	 *
 	 */
-	return tc358770_write(tc->regmap, DP0_VIDMNGEN1, 0xA8C0);
+	return tc358770_write(tc->regmap, DP0_VIDMNGEN1, 0x98A3);
 }
 
 static int tc_set_dsi_configuration(struct tc_data *tc)
@@ -957,7 +957,7 @@ static int tc_set_video_mode(struct tc_data *tc,
 	 */
 	ret = tc358770_write(tc->regmap, VPCTRL0,
 			   FIELD_PREP(VSDELAY, 0x200) |
-			   OPXLFMT_RGB666 | FRMSYNC_DISABLED | MSF_DISABLED);
+			   OPXLFMT_RGB666 | FRMSYNC_DISABLED | MSF_ENABLED);
 	if (ret)
 		return ret;
 
@@ -1036,14 +1036,14 @@ static int tc_set_video_mode(struct tc_data *tc,
 	ret = tc358770_write(tc->regmap, DP0_SYNCVAL, dp0_syncval);
 	if (ret)
 		return ret;
-
+/*
 	ret = tc358770_write(tc->regmap, DPIPXLFMT,
 			   VS_POL_ACTIVE_LOW | HS_POL_ACTIVE_LOW |
 			   DE_POL_ACTIVE_HIGH | SUB_CFG_TYPE_CONFIG1 |
 			   DPI_BPP_RGB888);
 	if (ret)
 		return ret;
-
+*/
 	ret = tc358770_write(tc->regmap, DP0_MISC,0x1EBF0000);
 /*	ret = tc358770_write(tc->regmap, DP0_MISC,
 			   FIELD_PREP(MAX_TU_SYMBOL, max_tu_symbol) |

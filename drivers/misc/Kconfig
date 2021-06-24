@@ -569,6 +569,11 @@ config GPIO_TRIG
 	help
 	  Enable this driver will support gpio trigger.
 
+config GPIO_HPDET
+	bool "gpio headphone detect driver"
+	help
+	  Enable this driver will support gpio headphone detect trigger.
+
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"

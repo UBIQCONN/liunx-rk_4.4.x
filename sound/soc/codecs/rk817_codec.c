@@ -496,6 +496,8 @@ static int rk817_playback_path_put(struct snd_kcontrol *kcontrol,
 	pre_path = rk817->playback_path;
 	rk817->playback_path = ucontrol->value.integer.value[0];
 
+	printk(KERN_INFO "%s : set playback_path %ld, pre_path %ld\n",
+	    __func__, rk817->playback_path, pre_path);
 	DBG("%s : set playback_path %ld, pre_path %ld\n",
 	    __func__, rk817->playback_path, pre_path);
 
@@ -770,6 +772,12 @@ static int rk817_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
+#ifdef CONFIG_GPIO_HPDET
+
+extern void digital_mute_notify(bool mute);
+
+#endif
+
 static int rk817_digital_mute(struct snd_soc_dai *dai, int mute)
 {
 	struct snd_soc_codec *codec = dai->codec;
@@ -810,6 +818,9 @@ static int rk817_digital_mute(struct snd_soc_dai *dai, int mute)
 		}
 	}
 
+#ifdef CONFIG_GPIO_HPDET
+	digital_mute_notify(mute);
+#endif
 	return 0;
 }
 

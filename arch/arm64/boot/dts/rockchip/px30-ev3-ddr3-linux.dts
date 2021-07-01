@@ -194,8 +194,8 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&edp_vcc1v8_drv>;
 		regulator-name = "vcc1v8_edp";
-		regulator-always-on;
-		regulator-boot-on;
+	/*	regulator-always-on; 
+		regulator-boot-on; */
 	};
 
 	vcc1v2_edp: vcc1v2-edp-regulator {
@@ -205,8 +205,8 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&edp_vcc1v2_drv>;
 		regulator-name = "vcc1v2_edp";
-		regulator-always-on;
-		regulator-boot-on;
+	/*	regulator-always-on;
+		regulator-boot-on; */
 	};
 
 	cam_avdd2v8: cam-avdd2v8-regulator {
@@ -345,7 +345,7 @@
                         native-mode = <&timing0>;
  
                         timing0: timing0 {
-	          		clock-frequency = <144000000>;  
+	          		clock-frequency = <139200000>;   
                                 hactive = <1920>;
                                 vactive = <1080>;
                                 hfront-porch = <48>;
@@ -463,7 +463,7 @@
 
 &dmc {
 	center-supply = <&vdd_logic>;
-	status = "okay"; 
+	status = "okay";  
 };
 
 &emmc {
@@ -479,7 +479,7 @@
 
 &gmac {
 	phy-supply = <&vcc_phy>;
-	clock_in_out = "output";
+	clock_in_out = "input";
 	snps,reset-gpio = <&gpio2 RK_PB5 GPIO_ACTIVE_LOW>;
 	snps,reset-active-low;
 	snps,reset-delays-us = <0 50000 50000>;
@@ -773,6 +773,8 @@
 
 		vcc1v8-supply = <&vcc1v8_edp>;
 		vcc1v2-supply = <&vcc1v2_edp>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&edp_enable_drv>; 
 
 	        ports {
         	        #address-cells = <1>;
@@ -1059,23 +1061,23 @@
 */
 	lcd-panel {
 		lcd_panel_reset: lcd-panel-reset {
-			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>; 
+			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_down>; 
 		};
 
 		edp_vcc1v2_drv: edp-vcc1v2-drv {
-			rockchip,pins = <3 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>;
+			rockchip,pins = <3 RK_PA2 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 
 		edp_vcc1v8_drv: edp-vcc1v8-drv {
-			rockchip,pins = <0 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>;
+			rockchip,pins = <0 RK_PB5 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 
 		bl_en_drv: bl-en-drv {
-			rockchip,pins = <0 RK_PC1 RK_FUNC_GPIO &pcfg_pull_up>;
+			rockchip,pins = <0 RK_PC1 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 
 		edp_enable_drv: edp-enable-drv {
-			rockchip,pins = <3 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>;
+			rockchip,pins = <3 RK_PB5 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 	};
 

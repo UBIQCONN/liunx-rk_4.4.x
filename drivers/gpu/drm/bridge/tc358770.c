@@ -1286,7 +1286,7 @@ static int tc_bridge_attach(struct drm_bridge *bridge)
 /*	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST
                 | MIPI_DSI_MODE_EOT_PACKET | MIPI_DSI_MODE_LPM; */
 	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST
-                | MIPI_DSI_CLOCK_NON_CONTINUOUS | MIPI_DSI_MODE_VIDEO_HBP; 
+                | MIPI_DSI_MODE_VIDEO_HBP; 
 
 	ret = mipi_dsi_attach(dsi);
 	if (ret < 0) {

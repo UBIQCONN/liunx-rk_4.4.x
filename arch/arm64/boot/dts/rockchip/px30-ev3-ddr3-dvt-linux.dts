@@ -1,0 +1,84 @@
+
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2019 Taiwan Ubiqconn Co., Ltd
+ *
+ */
+
+/dts-v1/;
+#include "px30-ev3-ddr3-linux.dts"
+
+/ {
+	model = "Ubiqconn linux PX30 EV3 ddr3 DVT board";
+	compatible = "ubiqconn,px30-evb-ddr3-dvt-linux", "rockchip,px30";
+};
+
+&edp_panel {
+	display-timings {
+		native-mode = <&timing0>;
+
+		timing0: timing0 {
+			clock-frequency = <146000000>;
+			hactive = <1920>;
+			vactive = <1080>;
+			hfront-porch = <144>;
+			hsync-len = <44>;
+			hback-porch = <88>;
+			vfront-porch = <4>;
+			vsync-len = <5>;
+			vback-porch = <15>;
+			hsync-active = <0>;
+			vsync-active = <0>;
+			de-active = <1>;
+			pixelclk-active = <0>;
+		};
+	};
+};
+
+/delete-node/ &tc358777xbg;
+&i2c1 {
+	status = "okay";
+
+	ite_bridge: ite6151@5c {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "ite,it6151";
+		reg = <0x5c>;
+		ite,dsi-lanes = <4>;
+		max,dsi-channel = <0>;
+		ite,dp-lanes = <2>;
+		status = "okay";
+		reset-gpios = <&gpio3 RK_PB5 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&edp_enable_drv>; 
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+
+				bridge_in_dsi: endpoint {
+					remote-endpoint = <&dsi_out_bridge>;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+
+				edp_out_panel: endpoint {
+					data-lanes = <0 1>;
+					lane-polarities = <0 1>;
+					remote-endpoint = <&panel_in_edp>;
+				};
+			};
+       		};
+	};
+};
+
+
+&dsi {
+	rockchip,lane-rate = <876>;
+};
+

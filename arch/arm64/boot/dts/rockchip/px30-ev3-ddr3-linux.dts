@@ -760,7 +760,7 @@
 &i2c1 {
 	status = "okay";
 
-	edp-bridge@68 {
+	tc358777xbg: tc358777xbg@68 {
         	compatible = "toshiba,tc358770";
 	        #address-cells = <1>;
 	        #size-cells = <0>;

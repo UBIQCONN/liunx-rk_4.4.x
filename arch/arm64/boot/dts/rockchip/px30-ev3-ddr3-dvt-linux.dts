@@ -50,6 +50,8 @@
 		status = "okay";
 		reset-gpios = <&gpio3 RK_PB5 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
+		vcc1v8-supply = <&vcc1v8_edp>;
+		vcc1v2-supply = <&vcc1v2_edp>;
 		pinctrl-0 = <&edp_enable_drv>; 
 
 		ports {

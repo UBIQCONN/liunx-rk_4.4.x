@@ -194,8 +194,8 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&edp_vcc1v8_drv>;
 		regulator-name = "vcc1v8_edp";
-	/*	regulator-always-on; 
-		regulator-boot-on; */
+		regulator-always-on; 
+		regulator-boot-on; 
 	};
 
 	vcc1v2_edp: vcc1v2-edp-regulator {
@@ -205,8 +205,8 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&edp_vcc1v2_drv>;
 		regulator-name = "vcc1v2_edp";
-	/*	regulator-always-on;
-		regulator-boot-on; */
+		regulator-always-on;
+		regulator-boot-on; 
 	};
 
 	cam_avdd2v8: cam-avdd2v8-regulator {

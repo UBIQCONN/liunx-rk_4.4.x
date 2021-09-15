@@ -1596,7 +1596,7 @@ static int __gc8034_power_on(struct gc8034 *gc8034)
 
 	usleep_range(1000, 1100);
 	if (!IS_ERR(gc8034->reset_gpio))
-		gpiod_set_value_cansleep(gc8034->reset_gpio, 0);
+		gpiod_set_value_cansleep(gc8034->reset_gpio, 1);
 	/* 8192 cycles prior to first SCCB transaction */
 	delay_us = gc8034_cal_delay(8192);
 	usleep_range(delay_us, delay_us * 2);
@@ -1617,7 +1617,7 @@ static void __gc8034_power_off(struct gc8034 *gc8034)
 		gpiod_set_value_cansleep(gc8034->pwdn_gpio, 1);
 	clk_disable_unprepare(gc8034->xvclk);
 	if (!IS_ERR(gc8034->reset_gpio))
-		gpiod_set_value_cansleep(gc8034->reset_gpio, 1);
+		gpiod_set_value_cansleep(gc8034->reset_gpio, 0);
 	if (!IS_ERR_OR_NULL(gc8034->pins_sleep)) {
 		ret = pinctrl_select_state(gc8034->pinctrl,
 					   gc8034->pins_sleep);

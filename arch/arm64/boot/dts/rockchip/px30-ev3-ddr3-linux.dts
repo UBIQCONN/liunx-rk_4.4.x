@@ -749,7 +749,7 @@
 			clock-names = "mclk";
 			pinctrl-names = "default";
 			pinctrl-0 = <&i2s1_2ch_mclk>;
-			hp-volume = <3>;
+			hp-volume = <14>;
 			spk-volume = <3>;
 			capture-volume = <3>;
 			status = "okay";

@@ -1574,7 +1574,7 @@ static int __gc8034_power_on(struct gc8034 *gc8034)
 		return ret;
 	}
 	if (!IS_ERR(gc8034->reset_gpio))
-		gpiod_set_value_cansleep(gc8034->reset_gpio, 1);
+		gpiod_set_value_cansleep(gc8034->reset_gpio, 0);
 
 	ret = regulator_bulk_enable(GC8034_NUM_SUPPLIES, gc8034->supplies);
 	if (ret < 0) {

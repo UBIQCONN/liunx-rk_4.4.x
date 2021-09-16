@@ -903,9 +903,30 @@ static int rk817_resume(struct snd_soc_codec *codec)
 	return 0;
 }
 
+
+static ssize_t rk817_volume_set(struct device *dev,
+			       struct device_attribute *attr,
+			       const char *buf, size_t count)
+{
+	struct rk817_codec_priv *rk817 = dev_get_drvdata(dev);
+	int value;
+	int ret;
+
+	ret = kstrtoint(buf, 8, &value);
+	if (ret != 0)
+		return ret;
+
+	rk817->hp_volume = value;
+
+	return count;
+}
+
+static DEVICE_ATTR(volume, 0200, NULL, rk817_volume_set);
+
 static int rk817_probe(struct snd_soc_codec *codec)
 {
 	struct rk817_codec_priv *rk817 = snd_soc_codec_get_drvdata(codec);
+	int ret;
 
 	DBG("%s\n", __func__);
 
@@ -922,6 +943,12 @@ static int rk817_probe(struct snd_soc_codec *codec)
 
 	snd_soc_add_codec_controls(codec, rk817_snd_path_controls,
 				   ARRAY_SIZE(rk817_snd_path_controls));
+
+	ret = device_create_file(codec->dev, &dev_attr_volume);
+	if (ret != 0) {
+		dev_err(codec->dev, "Failed to create keyclick file: %d\n",
+			ret);
+	}
 	return 0;
 }
 
@@ -930,6 +957,7 @@ static int rk817_remove(struct snd_soc_codec *codec)
 {
 	struct rk817_codec_priv *rk817 = snd_soc_codec_get_drvdata(codec);
 
+	device_remove_file(codec->dev, &dev_attr_volume);
 	DBG("%s\n", __func__);
 
 	if (!rk817) {

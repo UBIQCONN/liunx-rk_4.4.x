@@ -977,7 +977,7 @@ static void it6151_bridge_post_disable(struct drm_bridge *bridge)
 {
 	struct it6151 *it6151 = bridge->driver_private;
 
-	drm_panel_unprepare(it6151->panel);
+//	drm_panel_unprepare(it6151->panel);
 
         if (it6151->reset_gpio){
 		gpiod_direction_output(it6151->reset_gpio, 0);

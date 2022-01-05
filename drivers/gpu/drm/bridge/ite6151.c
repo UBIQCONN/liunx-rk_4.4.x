@@ -444,6 +444,9 @@ static void it6151_bridge_disable(struct drm_bridge *bridge)
 		return;
 	}
 
+	if (!(IS_ERR(it6151->reset_gpio))) {
+		gpiod_set_value_cansleep(it6151->reset_gpio, 0);
+	}
 	/* disable it6151 */
 	// todo 
 }
@@ -965,8 +968,8 @@ static void it6151_bridge_pre_enable(struct drm_bridge *bridge)
 	struct it6151 *it6151 = bridge_to_it6151(bridge);
 
         if (it6151->reset_gpio){
-		gpiod_direction_output(it6151->reset_gpio, 1);
-		usleep_range(40000, 60000);
+		gpiod_set_value_cansleep(it6151->reset_gpio, 1);
+		usleep_range(10000, 20000);
 	}	
 
 	drm_panel_prepare(it6151->panel);
@@ -975,13 +978,14 @@ static void it6151_bridge_pre_enable(struct drm_bridge *bridge)
 
 static void it6151_bridge_post_disable(struct drm_bridge *bridge)
 {
-	struct it6151 *it6151 = bridge->driver_private;
+//	struct it6151 *it6151 = bridge->driver_private;
 
 //	drm_panel_unprepare(it6151->panel);
-
-        if (it6151->reset_gpio){
-		gpiod_direction_output(it6151->reset_gpio, 0);
+/*
+	if (!(IS_ERR(it6151->reset_gpio))) {
+		gpiod_set_value_cansleep(it6151->reset_gpio, 0);
 	}
+*/	
 }
 
 static bool it6151_bridge_mode_fixup(struct drm_bridge *bridge,

@@ -56,9 +56,11 @@ static void gpios_array_work(struct work_struct *work)
 	
 	mutex_lock(&gt_cur->lock);
 	if (on){
+		dev_info(gt_cur->dev, "on:%d\n", on);
 		for (i=0; i<ga->ndescs; i++){
 			mdelay(gt_cur->on_array[i]);
 			if (gt_cur->play_on_array[i]){
+				dev_info(gt_cur->dev, "onplay:%d\n", gt_cur->onplay);
 				if (gt_cur->onplay)
 					gpiod_set_value_cansleep(ga->desc[i], 1);
 				else
@@ -71,6 +73,7 @@ static void gpios_array_work(struct work_struct *work)
 		}
 	}	
 	else{	
+		dev_info(gt_cur->dev, "off:%d\n", on);
 		for (i=0; i<ga->ndescs; i++){
 			mdelay(gt_cur->off_array[i]);
 			gpiod_set_value_cansleep(ga->desc[ga->ndescs - i - 1], 0);
@@ -174,7 +177,8 @@ void digital_mute_notify(bool mute)
 	struct gpio_hpdet *gt_cur = gt_cur_global;
 	if (gt_cur){
 		gt_cur->onplay = !mute;
-		schedule_delayed_work(&gt_cur->work, msecs_to_jiffies(10));
+	//	dev_info(gt_cur->dev, "mute:%d\n", mute);
+		schedule_delayed_work(&gt_cur->work, msecs_to_jiffies(30));
 	}
 }	
 EXPORT_SYMBOL(digital_mute_notify);

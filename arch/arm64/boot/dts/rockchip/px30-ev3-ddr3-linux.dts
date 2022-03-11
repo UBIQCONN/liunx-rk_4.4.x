@@ -209,6 +209,18 @@
 		regulator-boot-on; 
 	};
 
+
+	test_edp: test-edp-regulator {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		gpio= <&gpio3 RK_PA1 GPIO_ACTIVE_HIGH>;  
+		pinctrl-names = "default";
+		pinctrl-0 = <&lcd_panel_reset>;
+		regulator-name = "test_edp";
+		regulator-always-on;
+		regulator-boot-on; 
+	};
+ 
 	cam_avdd2v8: cam-avdd2v8-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -337,9 +349,6 @@
 
                 width-mm = <121>;
                 height-mm = <68>;
-		enable-gpios= <&gpio3 RK_PA1 GPIO_ACTIVE_HIGH>;  
-		pinctrl-names = "default";
-		pinctrl-0 = <&lcd_panel_reset>; 
 
                 display-timings {
                         native-mode = <&timing0>;

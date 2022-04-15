@@ -760,6 +760,7 @@
 			pinctrl-0 = <&i2s1_2ch_mclk>;
 			hp-volume = <14>;
 			spk-volume = <3>;
+			use-ext-amplifier;
 			capture-volume = <3>;
 			status = "okay";
 		};

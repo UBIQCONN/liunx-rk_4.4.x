@@ -497,6 +497,7 @@
 
 &gpu {
 	mali-supply = <&vdd_logic>;
+	power-off-delay-ms = <200>;
 	status = "okay";
 };
 
